@@ -19,13 +19,13 @@ export default function Home() {
 
   const handleTranscribe = async () => {
     if (!file) {
-      setError('請先選擇音檔文件');
+      setError('Please select an audio file first');
       return;
     }
 
     setIsTranscribing(true);
     setError('');
-    
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -40,10 +40,10 @@ export default function Home() {
       if (result.success) {
         setTranscription(result.text);
       } else {
-        setError(result.error || '轉換失敗');
+        setError(result.error || 'Transcription failed');
       }
-    } catch (err) {
-      setError('網絡錯誤，請稍後再試');
+    } catch (error) {
+      setError('Network error, please try again later');
     } finally {
       setIsTranscribing(false);
     }
@@ -54,13 +54,16 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-zinc-900">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-zinc-900">
       <main className="w-full max-w-2xl p-8">
         <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-center mb-8 text-zinc-900 dark:text-zinc-100">
-            音檔轉文字工具
+          <h1 className="text-3xl font-bold text-center mb-4 text-zinc-900 dark:text-zinc-100">
+            English Audio to Text Tool
           </h1>
-          
+          <p className="text-center text-zinc-600 dark:text-zinc-400 mb-8">
+            Convert English speech to text using OpenAI Whisper API
+          </p>
+
           <div className="space-y-6">
             {/* 文件上傳區域 */}
             <div className="border-2 border-dashed border-zinc-300 dark:border-zinc-600 rounded-lg p-6">
@@ -72,16 +75,19 @@ export default function Home() {
                   className="hidden"
                   id="audioFile"
                 />
-                <label 
-                  htmlFor="audioFile" 
+                <label
+                  htmlFor="audioFile"
                   className="cursor-pointer inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
-                  選擇音檔文件
+                  Choose Audio File
                 </label>
                 <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  支援格式：MP3, MP4, WAV, M4A, WEBM (最大25MB)
+                  Supported formats: MP3, MP4, WAV, M4A, WEBM (Max 25MB)
                 </p>
-                
+                <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                  ⚠️ English audio only
+                </p>
+
                 {file && (
                   <div className="mt-4 p-3 bg-zinc-100 dark:bg-zinc-700 rounded text-sm">
                     <p className="font-medium text-zinc-900 dark:text-zinc-100">{file.name}</p>
@@ -97,7 +103,7 @@ export default function Home() {
               disabled={!file || isTranscribing}
               className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-zinc-400 disabled:cursor-not-allowed transition-colors"
             >
-              {isTranscribing ? '轉換中...' : '開始轉換'}
+              {isTranscribing ? 'Converting...' : 'Start Conversion'}
             </button>
 
             {/* 錯誤訊息 */}
@@ -110,19 +116,22 @@ export default function Home() {
             {/* 轉換結果 */}
             {transcription && (
               <div className="p-4 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-lg">
-                <h3 className="font-semibold mb-2 text-green-800 dark:text-green-200">轉換結果：</h3>
+                <h3 className="font-semibold mb-2 text-green-800 dark:text-green-200">Transcription Result:</h3>
                 <p className="text-green-700 dark:text-green-300 whitespace-pre-wrap">{transcription}</p>
                 <button
                   onClick={() => navigator.clipboard.writeText(transcription)}
                   className="mt-2 px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
                 >
-                  複製文字
+                  Copy Text
                 </button>
               </div>
             )}
           </div>
         </div>
       </main>
+      <footer className="text-center py-6 text-zinc-400 text-sm">
+        Copyright © 2025 All rights reserved. Pin-yu | Developer
+      </footer>
     </div>
   );
 }

@@ -44,13 +44,13 @@ export async function POST(request: NextRequest) {
     const audioFormData = new FormData();
     audioFormData.append('file', file);
     audioFormData.append('model', 'whisper-1');
-    audioFormData.append('language', 'zh'); // 設定為中文
+    audioFormData.append('language', 'en'); // 設定為英文
 
     // 調用OpenAI Whisper API
     const transcription = await openai.audio.transcriptions.create({
       file: file,
       model: 'whisper-1',
-      language: 'zh',
+      language: 'en',
     });
 
     return NextResponse.json({
