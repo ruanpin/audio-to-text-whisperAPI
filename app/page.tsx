@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
+  const [apiKey, setApiKey] = useState<string>('');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcription, setTranscription] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -23,12 +24,18 @@ export default function Home() {
       return;
     }
 
+    if (!apiKey.trim()) {
+      setError('Please enter your OpenAI API key');
+      return;
+    }
+
     setIsTranscribing(true);
     setError('');
 
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('apiKey', apiKey.trim());
 
       const response = await fetch('/api/transcribe', {
         method: 'POST',
@@ -65,6 +72,24 @@ export default function Home() {
           </p>
 
           <div className="space-y-6">
+            {/* API Key 輸入區域 */}
+            <div className="space-y-2">
+              <label htmlFor="apiKey" className="block text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                OpenAI API Key
+              </label>
+              <input
+                type="password"
+                id="apiKey"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Enter your OpenAI API key (sk-...)"
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
+              />
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Your API key is only used for this request and is not stored anywhere
+              </p>
+            </div>
+
             {/* 文件上傳區域 */}
             <div className="border-2 border-dashed border-zinc-300 dark:border-zinc-600 rounded-lg p-6">
               <div className="text-center">
@@ -100,7 +125,7 @@ export default function Home() {
             {/* 轉換按鈕 */}
             <button
               onClick={handleTranscribe}
-              disabled={!file || isTranscribing}
+              disabled={!file || !apiKey.trim() || isTranscribing}
               className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-zinc-400 disabled:cursor-not-allowed transition-colors"
             >
               {isTranscribing ? 'Converting...' : 'Start Conversion'}

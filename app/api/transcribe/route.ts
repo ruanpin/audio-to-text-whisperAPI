@@ -1,18 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// 原本從環境變數拿 API key 的方式（保留以備後用）
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const apiKey = formData.get('apiKey') as string;
 
     if (!file) {
       return NextResponse.json({ error: '未找到音檔文件' }, { status: 400 });
     }
+
+    if (!apiKey) {
+      return NextResponse.json({ error: '請提供 OpenAI API Key' }, { status: 400 });
+    }
+
+    // 創建 OpenAI 實例
+    const openai = new OpenAI({
+      apiKey: apiKey,
+    });
 
     // 檢查文件大小 (API有25MB限制) whisper API可能超過10MB就會出現問題
     if (file.size > 25 * 1024 * 1024) {
